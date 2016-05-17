@@ -34,10 +34,18 @@ Database::Database(std::string file_path) {
 }
 
 bool Database::exec_command(std::string sql) {
+    char *error = 0;
+    int rc = sqlite3_exec(this->db, sql.c_str(), NULL, NULL, &error);
 
+    if(!check_rc(rc)){
+        std::cerr << "The command has failed because of " << error << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
-bool Database::query_command(std::string sql, std::map& container) {
+bool Database::query_command(std::string sql, std::vector<std::map<std::string, std::string> >& container) {
     if(this->query != NULL){
         delete this->query;
     }
@@ -52,5 +60,26 @@ bool Database::query_command(std::string sql, std::map& container) {
 }
 
 bool Database::update_command(std::string sql) {
+    
+}
 
+void Database::test_display(std::vector<std::map<std::string, std::string> > &temp) {
+    auto v_begin = temp.cbegin();
+
+    while(v_begin != temp.cend()){
+        auto d_begin = (*v_begin).cbegin();
+        while(d_begin != (*v_begin).cend()){
+            std::cout << d_begin->first << " : " << d_begin->second << std::endl;
+            d_begin++;
+        }
+        v_begin++;
+        std::cout << std::endl;
+    }
+}
+
+bool Database::check_rc(int rc) {
+    if(rc != SQLITE_OK){
+        return false;
+    }
+    return true;
 }
