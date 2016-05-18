@@ -6,33 +6,29 @@
 #include <string>
 #include <ctime>
 #include "system.h"
-#include "sqlite3.h"
-#include "Teacher.h"
-#include "Student.h"
-#include "Restrict.h"
 
 
-System::System(){
-    this->database = 0;
+
+System::System(std::string file_path){
+    this->db = new Database(file_path);
     this->current = NULL;
     this->max_number = 0;
 }
 
-bool System::init(){
-    int rc = sqlite3_open("/Users/crazyLeaves/ClionProjects/C++/test.db", &this->database);
 
-    if(rc != SQLITE_OK){
-        std::cerr << "The database failed to open." << std::endl;
-        return false;
+System::~System(){
+    if(this->db != NULL){
+        delete this->db;
     }
 
-    return true;
+    if(this->current != NULL){
+        delete this->current;
+    }
+
 }
 
-bool System::query_number_and_handle(int number) {
 
-    int rc;
-    char *error = 0;
+bool System::query_number_and_handle(int number) {
 
     if(!this->number_check(number)){
         std::cerr << "Your number is invalid." << std::endl;
@@ -40,16 +36,23 @@ bool System::query_number_and_handle(int number) {
     }
 
 
-
     std::string query_sql = "select rowid, * from account where rowid = ";
     query_sql += std::to_string(number);
-    rc = sqlite3_exec(this->database, query_sql.c_str(), System::query_callback, (void *)this, &error);
-    sqlite3_free(error);
-
-    if(!check_rc(rc)){
-        std::cerr << "Query has failed because of " << error <<std::endl;
+    std::vector<std::map<std::string, std::string> >info;
+    if(!this->db->query_command(query_sql, info)){
         return false;
     }
+
+    int kind = this->d_string_to_int("kind", info);
+    int money = this->d_string_to_int("money", info);
+    int rowid = this->d_string_to_int("rowid", info);
+    int times = this->d_string_to_int("times", info);
+    std::string name = info[0].find("name")->second;
+
+    if(!this->person_initalize(rowid, money, name, times, kind)){
+        return false;
+    }
+
 
     if(!this->handle()){
         return false;
@@ -62,10 +65,12 @@ bool System::query_number_and_handle(int number) {
         return false;
     }
 
+
     return true;
 }
 
 bool System::handle(){
+
     this->current->decrease_money_once();
     this->current->increase_times();
     int card_number = this->current->get_card_number();
@@ -73,23 +78,15 @@ bool System::handle(){
     int times = this->current->get_times();
 
 
-    int rc;
     std::string sql = "update account set money = " + std::to_string(left_money) +
                       ", times = " + std::to_string(times) +
                       " where rowid = " + std::to_string(card_number);
-    char *error = 0;
 
-    rc = sqlite3_exec(this->database, sql.c_str(), NULL, NULL, &error);
-    sqlite3_free(error);
-
-    if(!check_rc(rc)){
-        std::cerr << "Handle has failed because of " << error <<std::endl;
+    if(!(this->db->update_command(sql))){
         return false;
     }
 
-
     return true;
-
 }
 
 void System::display_information() {
@@ -107,42 +104,6 @@ void System::display_information() {
     std::cout << "You have taken bus for " << this->current->get_times() << " times this month." << std::endl;
 }
 
-bool System::close() {
-    int rc = sqlite3_close(this->database);
-
-    if(!check_rc(rc)){
-        std::cerr << "The database failed to close." << std::endl;
-        return true;
-    }
-
-    return false;
-}
-
-bool System::check_rc(int rc) {
-    if(rc != SQLITE_OK){
-        return false;
-    }
-    return true;
-}
-
-int System::query_callback(void *pv, int argc, char **argv, char **col_name) {
-    int i;
-    int number, money, kind, times;
-    std::string name;
-    System *temp = static_cast<System *>(pv);
-    number = atoi(argv[0]);
-    money = atoi(argv[1]);
-    name = std::string(argv[2]);
-    kind = atoi(argv[3]);
-    times = atoi(argv[4]);
-
-    if(!temp->person_initalize(number, money, name, times, kind)){
-        //non-zero means false;
-        return 1;
-    }
-
-    return 0;
-}
 
 bool System::person_initalize(int card_number, int left_money, std::string name, int times, int kind) {
     if(this->current != NULL){
@@ -179,16 +140,15 @@ bool System::person_destruct() {
 
 bool System::number_check(int number) {
 
-    int rc;
-    char *error = 0;
-    std::string sql = "select max(rowid) from account;";
+    std::string sql = "select max(rowid) as max_rowid  from account;";
 
-    rc = sqlite3_exec(this->database, sql.c_str(), System::number_callback, (void *)this, &error);
+    v_dict max_rowid;
 
-    if(!check_rc(rc)){
-        std::cerr << "Query has failed because of " << error <<std::endl;
+    if(!this->db->query_command(sql, max_rowid)){
         return false;
     }
+
+    this->max_number = atoi((max_rowid[0].find("max_rowid")->second).c_str());
 
     if(number > this->max_number || number < 0){
         return false;
@@ -197,9 +157,6 @@ bool System::number_check(int number) {
     return true;
 }
 
-int System::number_callback(void *pv, int argc, char **argv, char **col_name) {
-    System *current = static_cast<System *>(pv);
-    current-> max_number = atoi(argv[0]);
-    return 0;
+int System::d_string_to_int(std::string target, v_dict source) {
+    return atoi((source[0].find(target)->second).c_str());
 }
-
