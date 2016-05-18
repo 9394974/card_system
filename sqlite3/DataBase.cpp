@@ -2,9 +2,14 @@
 // Created by crazy_leaves on 16/5/16.
 //
 
-#include "DataBase.h"
+#include "Database.h"
 
 Database::Database(std::string file_path) {
+    this->query = NULL;
+    this->insert = NULL;
+    this->update = NULL;
+
+
     std::fstream file;
 
     file.open(file_path, std::ios::in);
@@ -25,12 +30,18 @@ Database::Database(std::string file_path) {
             file.open(file_path, std::ios::out);
         }
         else{
-            std::cerr << "The program is exiting and you should create your db file maually." << std::endl;
+            std::cerr << "The program is exiting and you should create your db file manually." << std::endl;
             exit(0);
         }
     }
 
-    sqlite3_open(file_path.c_str(), &this->db);
+    int rc = sqlite3_open(file_path.c_str(), &this->db);
+
+    if(rc != SQLITE_OK){
+        std::cerr << "The database failed to open.Program is exiting." << std::endl;
+        exit(0);
+    }
+
 }
 
 bool Database::exec_command(std::string sql) {
@@ -60,7 +71,17 @@ bool Database::query_command(std::string sql, std::vector<std::map<std::string, 
 }
 
 bool Database::update_command(std::string sql) {
-    
+    if(this->update != NULL){
+        delete this->update;
+    }
+
+    this->update = new Update(this->db);
+
+    if(!this->update->easy_update(sql)){
+        return false;
+    }
+
+    return true;
 }
 
 void Database::test_display(std::vector<std::map<std::string, std::string> > &temp) {

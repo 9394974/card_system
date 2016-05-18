@@ -4,6 +4,7 @@
 #include "sqlite3.h"
 #include "Query.h"
 #include "Update.h"
+#include "Insert.h"
 #include <string>
 #include <map>
 #include <fstream>
@@ -24,6 +25,7 @@ public:
 private:
     Query* query;
     Update* update;
+    Insert* insert;
     sqlite3* db;
     bool check_rc(int rc);
 };

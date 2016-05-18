@@ -25,7 +25,14 @@ Query::Query(sqlite3 *db) {
 
 bool Query::easy_query(std::string sql, std::vector<std::map<std::string, std::string> >& container) {
     char *error = 0;
-    sqlite3_exec(this->db_pointer, sql.c_str(), query_callback, (void *)&container, &error);
+    int rc = sqlite3_exec(this->db_pointer, sql.c_str(), query_callback, (void *)&container, &error);
+
+    if(rc != SQLITE_OK){
+        std::cerr << "The query has failed because of " << *error << std::endl;
+        return false;
+    }
+
+    sqlite3_free(error);
     //std::cout << error 蜜汁bug
     return true;
 }
