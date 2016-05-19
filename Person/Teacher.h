@@ -12,6 +12,7 @@ class Teacher : public Person {
 public:
     Teacher(int number, int money, std::string name, int times);
     bool decrease_money_once() override;
+    ~Teacher();
 };
 
 #endif //C_TEACHER_H

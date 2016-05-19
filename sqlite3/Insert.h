@@ -1,8 +1,9 @@
 //
 // Created by crazy_leaves on 16/5/17.
 //
-
+#include "sqlite3.h"
 #include <string>
+#include <iostream>
 
 #ifndef C_INSERT_H
 #define C_INSERT_H

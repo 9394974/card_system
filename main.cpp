@@ -1,9 +1,9 @@
 #include <iostream>
-#include "system.h"
+#include "Bus.h"
 
 int main() {
-    System main_system("/Users/crazyLeaves/ClionProjects/C++/test.db");
-    main_system.query_number_and_handle(20);
-
+    Bus test(new Database("/Users/crazyLeaves/ClionProjects/C++/test.db"), 4);
+    test.person_up(10);
+    test.person_down(10);
     return 0;
 }

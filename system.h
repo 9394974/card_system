@@ -16,20 +16,13 @@
 class System {
 public:
     System(std::string file_path);
-    bool query_number_and_handle(int number);
     ~System();
 
 private:
     Database* db;
-    Person *current;
-    int max_number;
 
-    bool handle();
-    bool person_initalize(int card_number, int left_money, std::string name, int times, int kind);
-    bool person_destruct();
-    void display_information();
-    int d_string_to_int(std::string target, v_dict source);
-    bool number_check(int number);
+
+
 };
 
 #endif //C_SYSTEM_H

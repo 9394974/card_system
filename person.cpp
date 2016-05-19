@@ -84,4 +84,3 @@ int Person::get_kinds(){
 
 
 
-

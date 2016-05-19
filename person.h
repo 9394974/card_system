@@ -5,7 +5,6 @@
 #ifndef C_PERSON_H
 #define C_PERSON_H
 
-
 #include <string>
 
 class Person {
@@ -23,6 +22,7 @@ public:
     bool increase_times();
     virtual bool decrease_money_once() = 0;
     virtual ~Person();
+
 
 private:
     int card_number;

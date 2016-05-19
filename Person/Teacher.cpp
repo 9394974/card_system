@@ -12,3 +12,7 @@ Teacher::Teacher(int number, int money, std::string name, int times) : Person(nu
 bool Teacher::decrease_money_once() {
     return false;
 }
+
+Teacher::~Teacher() {
+
+}

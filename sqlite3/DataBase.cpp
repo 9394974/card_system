@@ -84,6 +84,20 @@ bool Database::update_command(std::string sql) {
     return true;
 }
 
+bool Database::insert_command(std::string sql) {
+    if(this->insert != NULL){
+        delete this->insert;
+    }
+
+    this->insert = new Insert(this->db);
+
+    if(!this->insert->easy_insert(sql)){
+        return false;
+    }
+
+    return true;
+}
+
 void Database::test_display(std::vector<std::map<std::string, std::string> > &temp) {
     auto v_begin = temp.cbegin();
 

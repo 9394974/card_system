@@ -14,12 +14,15 @@
 #ifndef C_DATABASE_H
 #define C_DATABASE_H
 
+typedef std::vector<std::map<std::string, std::string>> v_dict;
+
 class Database{
 public:
     Database(std::string file_path);
     bool exec_command(std::string sql);
     bool query_command(std::string sql, std::vector<std::map<std::string, std::string> >& container);
     bool update_command(std::string sql);
+    bool insert_command(std::string sql);
     void test_display(std::vector<std::map<std::string, std::string> >& temp);
 
 private:
