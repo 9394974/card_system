@@ -6,13 +6,12 @@
 #define C_SYSTEM_H
 
 #include "person.h"
-#include "sqlite3.h"
 #include "Teacher.h"
 #include "Student.h"
 #include "Restrict.h"
 #include "Database.h"
 
-typedef std::vector<std::map<std::string, std::string>> v_dict;
+
 
 class System {
 public:
