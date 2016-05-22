@@ -22,6 +22,10 @@ public:
     void bus_information();
     void people_information();
     int get_bus_number();
+    bool set_end_time(std::string end_time);
+    std::string real_start_time;
+    std::string real_end_time;
+    int get_people_times();
     ~Bus();
 
 private:
@@ -31,7 +35,8 @@ private:
     Person *current;
     int valid_people_number;
     int current_load;
-    std::string real_start_time;
+    int people_times;
+
 
     int d_string_to_int(std::string target, v_dict source);
     std::string d_string(std::string target, v_dict source);

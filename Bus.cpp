@@ -9,11 +9,13 @@ Bus::Bus(Database* db_pointer, int no, std::string start_time) {
     this->db = db_pointer;
     this->current = 0;
     this->current_load = 0;
+    this->people_times = 0;
     this->real_start_time = start_time;
 
-    std::string sql = "select * from bus_info where number = ";
-    sql += std::to_string(no);
-    if(!this->db->query_command(sql, this->info)){
+    std::string query_sql = "select * from bus_info where number = ";
+    query_sql += std::to_string(no);
+
+    if(!this->db->query_command(query_sql, this->info)){
         std::cerr << "The bus failed to init." << std::endl;
         exit(0);
     }
@@ -23,6 +25,15 @@ Bus::Bus(Database* db_pointer, int no, std::string start_time) {
 
 Bus::~Bus(){
     this->person_down();
+
+
+    std::string insert_sql = "insert into bus_time values(date(\'now\'), \'" + this->real_start_time + "\', \'"
+                             + this->real_end_time + "\', " + this->d_string("number", this->info) + ")";
+
+    if(!this->db->insert_command(insert_sql)){
+
+        exit(0);
+    }
 
     if(this->current != nullptr){
         delete this->current;
@@ -87,6 +98,7 @@ bool Bus::person_down() {
             delete down;
             *i = nullptr;
         }
+        *i = nullptr;
     }
 
     this->current_load = 0;
@@ -192,6 +204,7 @@ bool Bus::person_destruct(int people_no) {
 
 bool Bus::increase_people(){
     this->current_load++;
+    this->people_times++;
     return true;
 }
 
@@ -224,4 +237,13 @@ void Bus::people_information(){
 
 int Bus::get_bus_number() {
     return this->d_string_to_int("number", this->info);
+}
+
+bool Bus::set_end_time(std::string end_time) {
+    this->real_end_time = end_time;
+    return true;
+}
+
+int Bus::get_people_times() {
+    return this->people_times;
 }

@@ -87,6 +87,7 @@ bool Database::update_command(std::string sql) {
 bool Database::insert_command(std::string sql) {
     if(this->insert != NULL){
         delete this->insert;
+        this->insert = NULL;
     }
 
     this->insert = new Insert(this->db);

@@ -34,7 +34,6 @@ int Person::get_times() {
 }
 
 
-
 void Person::set_left_money(int money) {
     this->left_money = money;
 }
@@ -74,7 +73,6 @@ bool Person::increase_times() {
     std::cout << "System error.";
     return false;
 }
-
 
 
 int Person::get_kinds(){
