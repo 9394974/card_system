@@ -15,11 +15,13 @@
 
 class Bus{
 public:
-    Bus(Database* db_pointer, int no);
+    Bus(Database* db_pointer, int no, std::string start_time);
     bool person_up(int people_no);
     bool person_down(int people_no);
     bool person_down();
-    void display_information();
+    void bus_information();
+    void people_information();
+    int get_bus_number();
     ~Bus();
 
 private:
@@ -27,13 +29,18 @@ private:
     v_dict info;
     std::vector<Person *> container;
     Person *current;
-    int max_people_number;
+    int valid_people_number;
+    int current_load;
+    std::string real_start_time;
 
     int d_string_to_int(std::string target, v_dict source);
+    std::string d_string(std::string target, v_dict source);
     bool number_check(int number);
+    bool load_check();
     bool person_initialize(int card_number, int left_money, std::string name, int times, int kind);
     bool handle_card();
     bool person_destruct(int people_no);
+    bool increase_people();
 };
 
 #endif //C_BUS_H

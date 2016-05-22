@@ -4,9 +4,12 @@
 
 #include "Bus.h"
 
-Bus::Bus(Database* db_pointer, int no) {
+Bus::Bus(Database* db_pointer, int no, std::string start_time) {
+
     this->db = db_pointer;
     this->current = 0;
+    this->current_load = 0;
+    this->real_start_time = start_time;
 
     std::string sql = "select * from bus_info where number = ";
     sql += std::to_string(no);
@@ -14,18 +17,17 @@ Bus::Bus(Database* db_pointer, int no) {
         std::cerr << "The bus failed to init." << std::endl;
         exit(0);
     }
+
+    this->bus_information();
 }
 
 Bus::~Bus(){
     this->person_down();
 
-    if(current != nullptr){
-        delete current;
+    if(this->current != nullptr){
+        delete this->current;
     }
 
-    if(db){
-        delete db;
-    }
 }
 
 bool Bus::person_up(int people_no) {
@@ -35,6 +37,10 @@ bool Bus::person_up(int people_no) {
         return false;
     }
 
+    if(!this->load_check()){
+        std::cerr << "Sorry.The bus is full." << std::endl;
+        return false;
+    }
 
     std::string query_sql = "select rowid, * from account where rowid = ";
     query_sql += std::to_string(people_no);
@@ -55,7 +61,9 @@ bool Bus::person_up(int people_no) {
         return false;
     }
 
-    this->display_information();
+    this->increase_people();
+
+    this->people_information();
 
     return true;
 }
@@ -64,6 +72,8 @@ bool Bus::person_down(int people_no) {
     if(!this->person_destruct(people_no)){
         return false;
     }
+
+    this->current_load--;
     return true;
 }
 
@@ -79,6 +89,8 @@ bool Bus::person_down() {
         }
     }
 
+    this->current_load = 0;
+
     return true;
 }
 
@@ -86,6 +98,10 @@ bool Bus::person_down() {
 
 int Bus::d_string_to_int(std::string target, v_dict source) {
     return atoi((source[0].find(target)->second).c_str());
+}
+
+std::string Bus::d_string(std::string target, v_dict source){
+    return source[0].find(target)->second;
 }
 
 bool Bus::number_check(int number) {
@@ -98,13 +114,20 @@ bool Bus::number_check(int number) {
         return false;
     }
 
-    this->max_people_number = atoi((max_rowid[0].find("max_rowid")->second).c_str());
+    this->valid_people_number = atoi((max_rowid[0].find("max_rowid")->second).c_str());
 
-    if(number > this->max_people_number || number < 0){
+    if(number > this->valid_people_number || number < 0){
         return false;
     }
 
     return true;
+}
+
+bool Bus::load_check() {
+
+    int max_load = this->d_string_to_int("max_load", this->info);
+
+    return this->current_load + 1 <= max_load;
 }
 
 bool Bus::person_initialize(int card_number, int left_money, std::string name, int times, int kind) {
@@ -167,8 +190,24 @@ bool Bus::person_destruct(int people_no) {
     return false;
 }
 
-void Bus::display_information() {
-    std::cout << "Welcome to bus " + this->info[0].find("number")->second << std::endl;
+bool Bus::increase_people(){
+    this->current_load++;
+    return true;
+}
+
+void Bus::bus_information() {
+    std::string type[3] = {"small", "medium", "large"};
+
+    std::cout << "Welcome to bus " + this->d_string("number", this->info) << std::endl;
+    std::cout << "The bus license is " << this->d_string("license", this->info) << std::endl;
+    std::cout << "The bus type is " << type[this->d_string_to_int("type", this->info)] << std::endl;
+    std::cout << "The bus driver name is " << this->d_string("dirver_name", this->info) << std::endl;
+    std::cout << "The max_load is " << this->d_string_to_int("max_load", this->info) << std::endl;
+
+
+}
+
+void Bus::people_information(){
     std::string name[3] = {"Teacher", "Student", "Restrict"};
     time_t t = time(0);
     struct tm * now = localtime(&t);
@@ -181,4 +220,8 @@ void Bus::display_information() {
     std::cout << "Your name is: " << this->current->get_possessor_name()<< std::endl;
     std::cout << "The money you left is: " << this->current->get_left_money() << std::endl;
     std::cout << "You have taken bus for " << this->current->get_times() << " times this month." << std::endl;
+}
+
+int Bus::get_bus_number() {
+    return this->d_string_to_int("number", this->info);
 }
