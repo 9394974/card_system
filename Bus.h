@@ -45,7 +45,7 @@ private:
     bool person_initialize(int card_number, int left_money, std::string name, int times, int kind);
     bool handle_card();
     bool person_destruct(int people_no);
-    bool increase_people();
+    bool increase_people(int identity);
 };
 
 #endif //C_BUS_H

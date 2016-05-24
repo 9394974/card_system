@@ -25,6 +25,8 @@ public:
     bool end_bus(int no, std::string end_time);
     Bus* get_current_bus();
     void query_bus(int no);
+    int increase_card(int money, std::string name, int kind);
+    bool delete_card(int no);
     ~System();
 
 private:

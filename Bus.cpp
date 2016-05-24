@@ -72,7 +72,12 @@ bool Bus::person_up(int people_no) {
         return false;
     }
 
-    this->increase_people();
+    int identity = this->d_string_to_int("identity", people_info);
+
+    //计算总次数的逻辑在increase_people
+    this->increase_people(identity);
+
+
 
     this->people_information();
 
@@ -202,7 +207,22 @@ bool Bus::person_destruct(int people_no) {
     return false;
 }
 
-bool Bus::increase_people(){
+bool Bus::increase_people(int identity){
+
+    int times = 0;
+    v_dict info;
+
+    std::string sql = "select times from account where identity = " + std::to_string(identity);
+
+    if(!this->db->query_command(sql, info)){
+        return false;
+    }
+
+    for(auto i = info.begin();i != info.end();i++){
+        times += atoi(((*i).find("times")->second).c_str());
+    }
+
+    this->current->set_sum_times(times);
     this->current_load++;
     this->people_times++;
     return true;
@@ -233,6 +253,7 @@ void Bus::people_information(){
     std::cout << "Your name is: " << this->current->get_possessor_name()<< std::endl;
     std::cout << "The money you left is: " << this->current->get_left_money() << std::endl;
     std::cout << "You have taken bus for " << this->current->get_times() << " times this month." << std::endl;
+    std::cout << "All times with your card is " << this->current->get_sum_times() << std::endl;
 }
 
 int Bus::get_bus_number() {

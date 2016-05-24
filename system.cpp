@@ -17,12 +17,12 @@ bool System::init_bus(int no, std::string start_time) {
 }
 
 bool System::end_bus(int no, std::string end_time) {
-    std::cout << std::string("The bus ") + std::to_string(this->current->get_bus_number()) + " start at " + this->current->real_start_time + " and end at " + this->current->real_end_time << std::endl;
-    std::cout << std::string("Today it has loaded ") + std::to_string(this->current->get_people_times()) + " people" << std::endl;
 
     for(auto i = this->container.begin();i != container.end();i++){
         if((*i)->get_bus_number() == no){
             (*i)->set_end_time(end_time);
+            std::cout << std::string("The bus ") + std::to_string(this->current->get_bus_number()) + " start at " + this->current->real_start_time + " and end at " + this->current->real_end_time << std::endl;
+            std::cout << std::string("Today it has loaded ") + std::to_string(this->current->get_people_times()) + " people" << std::endl;
             delete *i;
             *i = nullptr;
             return true;
@@ -63,6 +63,37 @@ void System::query_bus(int no){
 
     std::cout << ("Bus " + std::to_string(no) + " is supposed to start at " + start + " and end at " + end) << std::endl;
 
+}
+
+int System::increase_card(int money, std::string name, int kind) {
+    std::string sql = "insert into account values(" + std::to_string(money) + ", \'" + name + "\', " + std::to_string(kind) + ", 0)";
+
+    if(!this->db->insert_command(sql)){
+        return -1;
+    }
+
+    sql = "select max(rowid) as max_rowid  from account;";
+
+    v_dict max_rowid;
+
+    if(!this->db->query_command(sql, max_rowid)){
+        return false;
+    }
+
+    int number = atoi((max_rowid[0].find("max_rowid")->second).c_str());
+
+    return number;
+
+}
+
+bool System::delete_card(int no) {
+    std::string sql = "delete from account where rowid = " + std::to_string(no);
+
+    if(!this->db->exec_command(sql)){
+        return false;
+    }
+
+    return true;
 }
 
 

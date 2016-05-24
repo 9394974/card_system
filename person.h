@@ -16,6 +16,8 @@ public:
     int get_left_money();
     std::string get_possessor_name();
     int get_times();
+    bool set_sum_times(int times);
+    int get_sum_times();
 
     void set_possessor_name(std::string name);
     virtual int get_kinds();
@@ -29,6 +31,7 @@ private:
     int left_money;
     std::string possessor_name;
     int times;
+    int sum_times;
 
 protected:
     //teacher card is 0.

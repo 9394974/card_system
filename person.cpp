@@ -48,7 +48,6 @@ void Person::set_times(int times) {
 }
 
 
-
 bool Person::has_enough_money() {
     int money = this->get_left_money();
     if(money < 2){
@@ -79,6 +78,14 @@ int Person::get_kinds(){
     return kind;
 }
 
+bool Person::set_sum_times(int times) {
+    sum_times = times;
+    return true;
+}
+
+int Person::get_sum_times() {
+    return sum_times;
+}
 
 
 
