@@ -5,9 +5,13 @@ int main() {
     System main_system("/Users/crazyLeaves/ClionProjects/C++/test.db");
     main_system.init_bus(5, "07:00:00");
     Bus *cur = main_system.get_current_bus();
+    std::cin;
     cur->person_up(1);
-    cur->person_down();
-
+    cur->arrive_site();
+    cur->person_down(1);
+    cur->person_up(2);
+    cur->arrive_site();
+    cur->person_down(2);
 
     /*
     int number = main_system.increase_card(100, "abc", 0);

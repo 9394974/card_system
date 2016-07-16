@@ -9,7 +9,7 @@ include_directories("Person")
 include_directories("sqlite3")
 include_directories("Bus")
 
-set(SOURCE_FILES main.cpp person.cpp system.cpp Bus.cpp)
+set(SOURCE_FILES main.cpp person.cpp system.cpp Bus.cpp Site.cpp Site.h)
 add_executable(C++ ${SOURCE_FILES} Person sqlite3 Bus)
 
 target_link_libraries(C++ Person sqlite3 Bus)

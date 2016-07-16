@@ -4,7 +4,6 @@
 #include <iostream>
 #include "person.h"
 
-
 Person::Person(int number, int money, std::string name, int times) {
     this->card_number =  number;
     this->left_money = money;

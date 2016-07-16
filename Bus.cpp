@@ -20,6 +20,8 @@ Bus::Bus(Database* db_pointer, int no, std::string start_time) {
         exit(0);
     }
 
+    this->route = new Site(0, 10);
+
     this->bus_information();
 }
 
@@ -38,6 +40,8 @@ Bus::~Bus(){
     if(this->current != nullptr){
         delete this->current;
     }
+
+    delete this->route;
 
 }
 
@@ -76,8 +80,6 @@ bool Bus::person_up(int people_no) {
 
     //计算总次数的逻辑在increase_people
     this->increase_people(identity);
-
-
 
     this->people_information();
 
@@ -228,6 +230,23 @@ bool Bus::increase_people(int identity){
     return true;
 }
 
+
+bool Bus::arrive_site() {
+
+    int current = this->route->get_current_site();
+
+    if(current != this->route->get_end_site()){
+        current++;
+        this->route->set_current_site(current);
+        std::cout << "You hava arrived in Site " << current << std::endl;
+        return true;
+    }
+    else{
+        std::cout << "The bus has ended" << std::endl;
+        return false;
+    }
+}
+
 void Bus::bus_information() {
     std::string type[3] = {"small", "medium", "large"};
 
@@ -236,7 +255,7 @@ void Bus::bus_information() {
     std::cout << "The bus type is " << type[this->d_string_to_int("type", this->info)] << std::endl;
     std::cout << "The bus driver name is " << this->d_string("dirver_name", this->info) << std::endl;
     std::cout << "The max_load is " << this->d_string_to_int("max_load", this->info) << std::endl;
-
+    std::cout << "The bus will start from " << this->route->get_start_site() << " to " << this->route->get_end_site() << std::endl;
 
 }
 

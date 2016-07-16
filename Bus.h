@@ -7,6 +7,7 @@
 #include "Person/Teacher.h"
 #include "Person/Student.h"
 #include "Person/Restrict.h"
+#include "Site.h"
 #include <string>
 #include <vector>
 
@@ -26,6 +27,7 @@ public:
     std::string real_start_time;
     std::string real_end_time;
     int get_people_times();
+    bool arrive_site();
     ~Bus();
 
 private:
@@ -36,6 +38,7 @@ private:
     int valid_people_number;
     int current_load;
     int people_times;
+    Site *route;
 
 
     int d_string_to_int(std::string target, v_dict source);
